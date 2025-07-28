@@ -199,8 +199,11 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+--
+--
+-- MY REMAPS
+require 'deeman'
 
-vim.keymap.set('n', '<leader>e', vim.cmd.Ex, { desc = 'Open Explorer' })
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -654,6 +657,10 @@ require('lazy').setup({
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
 
+      capabilities.general = {
+        positionEncodings = { 'utf-8' },
+      }
+
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -663,12 +670,52 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+
+      local function get_python_path(workspace)
+        -- First, check for a .venv in the workspace
+        local venv_path = workspace .. '/.venv/bin/python'
+        if vim.fn.filereadable(venv_path) == 1 then
+          return venv_path
+        end
+      end
+
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
+        ruff = {},
+        pylsp = {
+          --          on_new_config = function(new_config, new_root_dir)
+          --            -- Dynamically set the python environment for the jedi plugin
+          --            local python_path = get_python_path(new_root_dir)
+          --            new_config.settings.pylsp.plugins.jedi.environment = python_path
+          --          end,
+          settings = {
+            pylsp = {
+              plugins = {
+                jedi_completion = {
+                  fuzzy = true,
+                },
+                jedi = {
+                  environment = get_python_path(vim.fn.getcwd()),
+                },
+                autoimport = { enabled = true },
+                pylsp_rope = { enabled = true },
+                pyflakes = { enabled = false },
+                pycodestyle = { enabled = false },
+                autopep8 = { enabled = false },
+                yapf = { enabled = false },
+                mccabe = { enabled = false },
+                pylsp_mypy = { enabled = false },
+                pylsp_black = { enabled = false },
+                pylsp_isort = { enabled = false },
+              },
+            },
+          },
+        },
+        clangd = {},
+        --basedpyright = {},
         --rust_analyzer = {},
-        --debugpy = {},
-        --ruff = {},
+        terraformls = {},
+        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+        --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
@@ -691,15 +738,13 @@ require('lazy').setup({
           },
         },
       }
-
       -- Ensure the servers and tools above are installed
       --
       -- To check the current status of installed tools and/or manually install
       -- other tools, you can run
       --    :Mason
       --
-      -- You can pr[
-      --  ess `g?` for help in this menu.
+      -- You can press `g?` for help in this menu.
       --
       -- `mason` had to be setup earlier: to configure its options see the
       -- `dependencies` table for `nvim-lspconfig` above.
@@ -937,7 +982,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'python', 'rust', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -967,10 +1012,10 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
-  require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.neo-tree',
+  -- require 'kickstart.plugins.indent_line',
+  -- require 'kickstart.plugins.lint',
+  -- require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
