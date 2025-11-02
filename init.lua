@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -161,6 +161,10 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+-- Set default tabsize to 4
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -660,6 +664,8 @@ require('lazy').setup({
       capabilities.general = {
         positionEncodings = { 'utf-8' },
       }
+      capabilities.textDocument.completion = nil
+      capabilities.textDocument.semanticTokens = nil
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -682,11 +688,6 @@ require('lazy').setup({
       local servers = {
         ruff = {},
         pylsp = {
-          --          on_new_config = function(new_config, new_root_dir)
-          --            -- Dynamically set the python environment for the jedi plugin
-          --            local python_path = get_python_path(new_root_dir)
-          --            new_config.settings.pylsp.plugins.jedi.environment = python_path
-          --          end,
           settings = {
             pylsp = {
               plugins = {
@@ -696,9 +697,10 @@ require('lazy').setup({
                 jedi = {
                   environment = get_python_path(vim.fn.getcwd()),
                 },
-                autoimport = { enabled = true },
+                autoimport = { enabled = false },
                 pylsp_rope = { enabled = true },
                 pyflakes = { enabled = false },
+                pylint = { enabled = false },
                 pycodestyle = { enabled = false },
                 autopep8 = { enabled = false },
                 yapf = { enabled = false },
@@ -710,7 +712,13 @@ require('lazy').setup({
             },
           },
         },
-        clangd = {},
+        clangd = {
+          cmd = {
+            'clangd',
+            '--fallback-style=webkit',
+            '--inactive-regions=disabled',
+          },
+        },
         --basedpyright = {},
         --rust_analyzer = {},
         terraformls = {},
@@ -790,20 +798,21 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
+      format_on_save = false,
+      -- function(bufnr)
+      --   -- Disable "format_on_save lsp_fallback" for languages that don't
+      --   -- have a well standardized coding style. You can add additional
+      --   -- languages here or re-enable it for the disabled ones.
+      --   local disable_filetypes = { c = true, cpp = true }
+      --   if disable_filetypes[vim.bo[bufnr].filetype] then
+      --     return nil
+      --   else
+      --     return {
+      --       timeout_ms = 500,
+      --       lsp_format = 'fallback',
+      --     }
+      --   end
+      -- end,
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
@@ -1022,7 +1031,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
