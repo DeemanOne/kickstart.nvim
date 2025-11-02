@@ -7,6 +7,7 @@ return {
   -- branch = "nightly",
   dependencies = {
     "nvim-lua/plenary.nvim",
+    'nvim-lua/plenary.nvim',
     -- if you want to enable coloring of ANSI escape codes in
     -- compilation output, add:
     -- { "m00qek/baleia.nvim", tag = "v1.3.0" },
