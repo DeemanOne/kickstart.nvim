@@ -684,41 +684,19 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 
-      local function get_python_path(workspace)
-        -- First, check for a .venv in the workspace
-        local venv_path = workspace .. '/.venv/bin/python'
-        if vim.fn.filereadable(venv_path) == 1 then
-          return venv_path
-        end
-      end
-
       local servers = {
         ruff = {},
-        pylsp = {
-          settings = {
-            pylsp = {
-              plugins = {
-                jedi_completion = {
-                  fuzzy = true,
-                },
-                jedi = {
-                  environment = get_python_path(vim.fn.getcwd()),
-                },
-                autoimport = { enabled = false },
-                pylsp_rope = { enabled = true },
-                pyflakes = { enabled = false },
-                pylint = { enabled = false },
-                pycodestyle = { enabled = false },
-                autopep8 = { enabled = false },
-                yapf = { enabled = false },
-                mccabe = { enabled = false },
-                pylsp_mypy = { enabled = false },
-                pylsp_black = { enabled = false },
-                pylsp_isort = { enabled = false },
-              },
-            },
+        ty = { settings = { ty = {} } },
+        clangd = {
+          cmd = {
+            "clangd",
+            "--fallback-style=llvm",
           },
+          init_options = {
+            fallbackFlags = { "-std=c99" },
+            },
         },
+
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -981,7 +959,7 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    main = 'nvim-treesitter', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
       ensure_installed = { 'python', 'rust', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
