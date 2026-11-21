@@ -23,6 +23,7 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+	'mfussenegger/nvim-dap-python'
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -54,6 +55,20 @@ return {
       end,
       desc = 'Debug: Step Out',
     },
+	{
+      '<F3>',
+      function()
+        require('dap').step_out()
+      end,
+      desc = 'Debug: Step Out',
+    },
+	{
+      '<F4>',
+      function()
+        require('dap').step_back()
+      end,
+      desc = 'Debug: Toggle Breakpoint',
+    },
     {
       '<leader>b',
       function()
@@ -76,6 +91,14 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+	{
+      '<F10>',
+      function()
+        require('dap').terminate()
+        require('dapui').close()
+      end,
+      desc = 'Debug: close',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -95,6 +118,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
+		'codelldb',
       },
     }
 
@@ -144,5 +168,6 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
+	require("dap-python").setup("uv")
   end,
 }
