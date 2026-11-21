@@ -561,6 +561,10 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- Align, like Emacs align-regexp. ga{motion}{char}: gaip= aligns a paragraph on '='.
+      -- gA{motion} is interactive with preview: s = split on a Lua pattern, j = justify, m = merge.
+      require('mini.align').setup()
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
